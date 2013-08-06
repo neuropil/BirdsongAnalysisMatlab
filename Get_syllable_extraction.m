@@ -255,6 +255,7 @@ Syll_Params.SyllPolygons.xCords = xcords;
 Syll_Params.SyllPolygons.yCords = ycords;
 Syll_Params.SyllIDS = syllOrder;
 Syll_Params.FeatureUsed = FeaUse;
+Syll_Params.TotalSylls = maxNumSylls;
 
 param_file_name = strcat(birdNum,'_SyllParamSpace.mat');
 

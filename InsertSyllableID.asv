@@ -75,11 +75,6 @@ PreAllName = strcat(birdNum,'_PreALL.mat');
 nameIndex = ~strcmp(PreAllName,songDSNs);
 songDSlist = songsDSNs(nameIndex);
 
-
-% typicalTrans = nchoosek(cell2mat(SyllIDS),2);
-
-% Use PreMat to get TypicalTrans 8/5/2013
-
 for sdi = 1:length(songDSlist)
     tempSongDS = songDSlist{sdi};
     load(tempSongDS)
@@ -140,7 +135,7 @@ for sdi = 1:length(songDSlist)
         SongSeqStats.SeqLinearity(syl,1) = songSylls/songTrans;
         
         
-    end
+        
         
     
     
