@@ -72,13 +72,53 @@ fileNames = cellstr(ls);
 songsDSNs = fileNames(3:end);
 
 PreAllName = strcat(birdNum,'_PreALL.mat');
-nameIndex = ~strcmp(PreAllName,songDSNs);
+nameIndex = ~strcmp(PreAllName,songsDSNs);
 songDSlist = songsDSNs(nameIndex);
 
 
 % typicalTrans = nchoosek(cell2mat(SyllIDS),2);
 
 % Use PreMat to get TypicalTrans 8/5/2013
+load(PreAllName)
+allPreSylls = PreMetaSet.syll_id;
+
+% Get Syllable all Pre syllable transitions
+syllPair = {};
+spCount = 1;
+fSl = 1;
+sSl = 2;
+for gsi = 1:length(allPreSylls) 
+    if sSl > length(allPreSylls)
+        break
+    elseif allPreSylls{fSl} == 'n' || allPreSylls{sSl} == 'n';
+        fSl = fSl + 1;
+        sSl = sSl + 1;
+    else
+        syllPair{spCount,1} = strcat(allPreSylls{fSl},allPreSylls{sSl});
+        fSl = fSl + 1;
+        sSl = sSl + 1;
+        spCount = spCount + 1;
+    end
+end
+    
+% Find unique syllable transitions and probabilities
+allSyllTrans = unique(syllPair);
+totalTrans = length(syllPair);
+
+% Get probabilites
+for stp = 1:length(allSyllTrans)
+    tranOccur = sum(strcmp(allSyllTrans{stp},syllPair));
+    allSyllTrans{stp,2} = tranOccur/totalTrans;
+end
+
+% Sort syll Trans Probabilites
+syllProbs = cell2mat(allSyllTrans(:,2));
+[~, sIndex] = sort(syllProbs, 'descend');
+allSyllTrans = allSyllTrans(sIndex,:);
+
+% Some Description
+
+TotalSylls = length(SyllIDS);
 
 for sdi = 1:length(songDSlist)
     tempSongDS = songDSlist{sdi};
@@ -117,7 +157,6 @@ for sdi = 1:length(songDSlist)
     for syl = 1:length(getWavindices)
         tempIndex = convert_wavs == getWavindices(syl);
         
-        % Sequence Linearity = # different syllables/song / # transition types
         songSylls = sum(cellfun(@(x) ~strcmp(x,'n'), unique(syll_id(tempIndex))));
         
         sylIndex = syll_id(tempIndex);
@@ -137,8 +176,17 @@ for sdi = 1:length(songDSlist)
         
         songTrans = numel(unique(sylTrans)); 
         
+        % Sequence Linearity = # different syllables/song / # transition types
+        
         SongSeqStats.SeqLinearity(syl,1) = songSylls/songTrans;
         
+        % Sequence Consistency = Sum typical syllables/song / Sum total transitions / song
+        
+        SongSeqStats.SeqConsistency(syl,1) = sum(ismember(sylTrans,allSyllTrans(:,1)))/numel(sylTrans);
+        
+        % Stereotypy Score = Sequence Linearity + Sequence Consistency / 2
+        
+        SongSeqStats.SongStereotypy(syl,1) = (SongSeqStats.SeqLinearity(syl,1) + SongSeqStats.SeqConsistency(syl,1)) / 2;
         
     end
         
