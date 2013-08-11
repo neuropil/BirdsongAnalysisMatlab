@@ -197,29 +197,8 @@ end
 
 
 
-plot(PreMetaSet.syldur,PreMetaSet.(FeatureUsed),'.')
-hold on
-plot(songDataset.syldur,songDataset.(FeatureUsed),'r.')
 
 
-
-
-
-syll_id = cell(length(PreMetaSet),1);
-for sii = 1:length(PreMetaSet)
-    songRow = false(1,maxNumSylls);
-    for sir = 1:maxNumSylls
-        songRow(sir) = syllable_indices{sir}(sii);
-    end
-    
-    if sum(songRow) == 0
-        syll_id{sii} = 'n';
-    else
-        syll_id{sii} = syllOrder{songRow};
-    end
-end
-
-syllidds = dataset(syll_id);
 
 
 
