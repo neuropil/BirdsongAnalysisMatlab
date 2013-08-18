@@ -118,8 +118,24 @@ allSyllTrans = allSyllTrans(sIndex,:);
 
 % Some Description
 
+seqFilename = strcat(birdNum,'_SongSequenceData.mat');
+
+songSeqDirName = strcat('C:\Users\Dr. JT\Documents\DataAnalysis\TF_Birdsong\SongSeqData\',...
+    birdNum);
+
+if exist(songSeqDirName,'dir')
+    cd(songSeqDirName)
+    if exist(seqFilename,'file')
+        disp('Seqence data has been analyzed!!!!');
+        return
+    end
+end
+
+cd(sapCheck);
+
 TotalSylls = length(SyllIDS);
 
+AllSongData = cell(length(songDSlist),2);
 for sdi = 1:length(songDSlist)
     tempSongDS = songDSlist{sdi};
     load(tempSongDS)
@@ -144,6 +160,11 @@ for sdi = 1:length(songDSlist)
             syll_id{sii} = SyllIDS{songRow};
         end
     end
+    
+    syllIDds = dataset(syll_id,'VarNames','SyllableID');
+    wavNums = StripWav(songDataset.filename);
+    songDataset = [songDataset , wavNums, syllIDds];
+    save(tempSongDS,'songDataset');
     
     convert_wavs = zeros(length(songDataset),1);
     for cwi = 1:length(songDataset)
@@ -189,54 +210,29 @@ for sdi = 1:length(songDSlist)
         SongSeqStats.SongStereotypy(syl,1) = (SongSeqStats.SeqLinearity(syl,1) + SongSeqStats.SeqConsistency(syl,1)) / 2;
         
     end
-        
     
     
+
+    
+    
+    SeqSongStats = dataset(SongSeqStats.SeqLinearity,SongSeqStats.SeqConsistency,SongSeqStats.SongStereotypy,'VarNames',{'SLinearity','SConsistent','SongStereo'});
+    
+    AllSongData{sdi,1} = tempSongDS;
+    AllSongData{sdi,2} = SeqSongStats;
+    
+    fprintf('Sequence analysis for file %s complete! \n', tempSongDS);
     
 end
 
+if ~exist(songSeqDirName,'dir')
+    mkdir(songSeqDirName)
+    cd(songSeqDirName)
+else
+    cd(songSeqDirName)
+end
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-PreMetaSet = horzcat(PreMetaSet,syllidds);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+save(seqFilename,'AllSongData');
 
 
 end
