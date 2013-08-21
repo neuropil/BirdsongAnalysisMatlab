@@ -78,20 +78,20 @@ end
 
 KL = ones(numDays,1)*E(1,:)-E;
 
-% 8/17/2013 NEED TO COMPLETE
+% 8/20/2013 NEED TO COMPLETE
+% ORDER OF DAYS IS FUCKED
 
 %%% plot the K-L distance %%%
 figure(1)
-feature = {'Pitch', 'FM', 'Entropy', 'Pitch Goodenss'};
-for n = 1:N-1
-    subplot(2,2,n);
-    plot(KL(:,n), 'o-');
-    xlim([0.8 M+.2]); 
-    title(sprintf('Duration and %s', feature{n}), 'fontsize', 11);
+for n = 1:numFeats
+    subplot(2,6,n);
+    plot(KL(:,n), 'o-'); % this dies on 12th iteration
+    xlim([0.8 numDays + 0.2]);
+    title(sprintf('Duration and %s', featNames{n}), 'fontsize', 11);
     ylabel(sprintf('KL-distance \n from day 1 (bits)'), 'fontsize', 10);
-    if n > 2
-        xlabel('session (day)');
-    end
+    
+    xlabel('session (day)');
+    
 end
 
 
