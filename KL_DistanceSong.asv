@@ -42,7 +42,7 @@ switch PreAll_check
 end
 
 % FINISH REORDER
-[songListReO , songAxis] = songDateReorder(songList2use);
+songListReO = songDateReorder(songList2use);
 
 numDays = length(songListReO); % 
 
@@ -124,8 +124,13 @@ for n = 1:numFeats - 1
     
     
     set(gca,'XTick', 1:1:length(songListReO))
-    set(gca,'XTickLabel',songAxis);
-
+    set(gca,'XTickLabel',songListReO);
+    
+    
+    
+    
+    xticklabel_rotate([],90,[]);
+    
 end
 
 
