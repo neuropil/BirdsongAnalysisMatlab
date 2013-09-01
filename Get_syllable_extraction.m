@@ -245,7 +245,12 @@ end
 
 syllidds = dataset(syll_id);
 
+% FIX how syllidds is inserted check dependancies
+% FIX how wave number is inserted
+
 PreMetaSet = horzcat(PreMetaSet,syllidds);
+wavNums = StripWav(PreMetaSet.filename);
+PreMetaSet = [PreMetaSet , wavNums];
 
 
 %% Outputs

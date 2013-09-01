@@ -1,4 +1,4 @@
-function [ output_args ] = SongSequenceAnalysis( input_args )
+function [KL2,tau] = SongSequenceAnalysis()
 %UNTITLED2 Summary of this function goes here
 %   Detailed explanation goes here
 
@@ -125,7 +125,7 @@ syllTransProb = syllTransOccur/sum(syllTransOccur);    % probability of each seq
 
 %% label each note for day 2 to day 12 %%%
 numDays = length(songListReO);      % number of sessions (before and after surgery)
-for dayI = 1:numDays - 1
+for dayI = 1:numDays
     tempDay = songListReO{dayI};
     load(tempDay)
     
@@ -150,29 +150,67 @@ end
 
 %% plot the selected sequencing distribution %%%
 
-t = [1 4 8 12];
+dayIndex = [1 4 8 12];
 day = {'day 1', 'day 4', 'day 6', 'day 8'};
-ind = find(max(p2(:,t),[],2) > 0.05);     % add low probability sequences together
-p_new = p2(ind, :); 
-p_new = [p_new; 1 - sum(p_new, 1)];  
-for k = 1:4
+numdisDays = length(dayIndex);
+% Get max syll trans probability across days of interest greater than 0.05
+maxProbIndex = find(max(syllTransProb(:,dayIndex),[],2) > 0.05); % add low probability sequences together
+
+maxSyllProbs = syllTransProb(maxProbIndex, :); 
+maxSyllProbs = [maxSyllProbs; 1 - sum(maxSyllProbs, 1)];  
+for ddI = 1:numdisDays
     figure(2)
-    subplot(4,1,k);
-    bar(1:length(ind)+1, p_new(:,t(k)));  
-    ylim([0 max(p2(:))+0.1]);
-    xlim([0.5 length(ind)+1.5]); 
-    set(gca, 'xtick', 0:length(ind), 'xticklabel', ' ');
-    if k == 4
-        set(gca, 'xtick', 1:length(ind)+1, 'xticklabel', [sbin2(ind) 'others'], 'fontsize', 12);
+    subplot(numdisDays,1,ddI);
+    bar(1:length(maxProbIndex)+1, maxSyllProbs(:,dayIndex(ddI)));  
+    ylim([0 max(syllTransProb(:)) + 0.1]);
+    xlim([0.5 length(maxProbIndex) + 1.5]); 
+    set(gca, 'xtick', 0:length(maxProbIndex), 'xticklabel', ' ');
+    if ddI == numdisDays
+        set(gca, 'xtick', 1:length(maxProbIndex)+1, 'xticklabel',...
+            [allPossSylTrans(maxProbIndex)' 'others'], 'fontsize', 12);
     end
     set(gca, 'ytick', [0 0.4], 'fontsize', 12);  
-    text(length(ind)-1, 0.35, day{k}, 'fontsize', 14);
+    text(length(maxProbIndex)-1, 0.35, day{ddI}, 'fontsize', 14);
 end
 
 
+%% remove the zero effect
+syllProb = syllProb + 1e-6;  
+syllProb = syllProb./(ones(size(syllProb,1),1)*sum(syllProb));
+syllTransProb = syllTransProb+ 1e-6;  
+syllTransProb = syllTransProb./(ones(size(syllTransProb,1),1)*sum(syllTransProb)); 
 
+%% estimate the KL-distance of the notes recovery %%%
+allDays = length(songsDSNs);
 
+for dayCount = 1:allDays
+    E(1,dayCount) = sum(syllProb(:,1).*log2(syllProb(:,1)+eps) - syllProb(:,1).*log2(syllProb(:,dayCount)+eps));
+    E(2,dayCount) = sum(syllTransProb(:,1).*log2(syllTransProb(:,1)+eps) - syllTransProb(:,1).*log2(syllTransProb(:,dayCount)+eps));
+end
+% KL1 = E(1,:);   % K-L distance on discrete clusters
+KL2 = E(2,:);   % K-L distance on sequences
 
+%% plot the K-L distance on sequence %%%
+figure(3);
+subplot(2,1,1);
+plot(KL2, 'ko-', 'linewidth', 2);
+axis([0.5 allDays + 0.5 0 max(KL2+1)]); 
+title('K-L distance on Sequence', 'fontsize', 12);
+ylabel(sprintf('KL-distance from \n day 1 (bits)'), 'fontsize', 10);
+xlabel('Session (day)', 'fontsize', 10);
+set(gca,'xtick', 0:allDays); 
+
+%% calculate the recovery rate for clusters and sequences  %%%
+
+% Needs revision 9/1/2013
+
+% 4 is post 1 to end
+% allDays - 3 (3 is the total number of pre days)
+
+nKL = E(:,4:end)./(E(:,4)*ones(1,allDays-3));
+X = (0:allDays-4)';
+Y = log(nKL)';
+tau = -1./(inv(X'*X)*X'*Y);  % tau(1): clusters, tau(2): sequences
 
 
 

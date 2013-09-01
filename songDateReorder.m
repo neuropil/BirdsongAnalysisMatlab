@@ -1,4 +1,4 @@
-function [ outList , axisOUT] = songDateReorder( inList )
+function [outList , axisOUT, condIndex, lrIndex] = songDateReorder( inList )
 %UNTITLED Summary of this function goes here
 %   Detailed explanation goes here
 
@@ -70,6 +70,8 @@ for cI = 1:4
             end
             
             preXaxis = num2cell(repmat('P',[length(PredateOrder),1]));
+            preCIndex = ones(1,length(PredateOrder));
+            prelrI = num2cell(nan(1,length(PredateOrder)));
             
         case 2
             
@@ -98,6 +100,8 @@ for cI = 1:4
             end
             
             LMANXaxis = num2cell(repmat('L',[length(LMdateOrder),1]));
+            lmanCIndex = ones(1,length(LMdateOrder)) + 1;
+            lmanlrI = num2cell(nan(1,length(PredateOrder)));
 
         case 3
             
@@ -123,6 +127,16 @@ for cI = 1:4
             end
             
             HVCINaxis = num2cell(repmat('I',[length(INdateOrder),1]));
+            hvciCIndex = ones(1,length(INdateOrder)) + 2;
+            
+            hvcilrI = cell(1,length(INdateOrder));
+            for di = 1:length(INdateOrder)
+                if strcmp('Right', regexp(INdateOrder{di},'Right|Left','match'))
+                    hvcilrI{di} = 'R';
+                else
+                    hvcilrI{di} = 'L';
+                end
+            end
             
         case 4
             
@@ -148,6 +162,17 @@ for cI = 1:4
             end
             
             HVCLNaxis = num2cell(repmat('H',[length(LNdateOrder),1]));
+            hvclCIndex = ones(1,length(LNdateOrder)) + 3;
+            
+            hvcllrI = cell(1,length(LNdateOrder));
+            for di = 1:length(LNdateOrder)
+                if strcmp('Right', regexp(LNdateOrder{di},'Right|Left','match'))
+                    hvcllrI{di} = 'R';
+                else
+                    hvcllrI{di} = 'L';
+                end
+            end
+            
     end
 end
 
@@ -158,3 +183,6 @@ outList = [PredateOrder ; LMdateOrder ; INdateOrder ; LNdateOrder];
 
 axisOUT = [preXaxis ; LMANXaxis ; HVCINaxis ; HVCLNaxis];
 
+condIndex = [preCIndex , lmanCIndex , hvciCIndex , hvclCIndex];
+
+lrIndex = [prelrI , lmanlrI , hvcilrI , hvcllrI];
