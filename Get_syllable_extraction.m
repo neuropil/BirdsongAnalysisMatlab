@@ -20,6 +20,10 @@ end
 
 %% Get Song Dataset
 
+% TO DO 9/1/2013 %%%%%%%%%%%%%%%$$$$$$$$$$$********************************
+% Consider resaving with new x and ylim cut offs or save out cutoffs
+% 
+
 cd(DS_DATA_LOC);
 
 dsSongN = strcat(birdNum,'_PreAll.mat');
