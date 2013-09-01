@@ -33,7 +33,7 @@ for cI = 1:4
 %                 preAllIndex = find(~cellfun('isempty',strfind(preDays,'PreALL')));
                 
                 preAllday = preDays{~cellfun('isempty',strfind(preDays,'PreALL'))};
-                predays = preDays(cellfun('isempty',strfind(preDays,'PreALL')));
+                preDays = preDays(cellfun('isempty',strfind(preDays,'PreALL')));
                 
                 preAllcheck = 1;
                 
@@ -43,30 +43,30 @@ for cI = 1:4
 
             end
             
-            dateNumVec = zeros(length(predays),1);
-            for pmd = 1:length(predays)
-                dateNumVec(pmd) = datenum(regexp(predays{pmd},'(0|1)?[0-9]{4}','match'),'mmdd');
+            dateNumVec = zeros(length(preDays),1);
+            for pmd = 1:length(preDays)
+                dateNumVec(pmd) = datenum(regexp(preDays{pmd},'(0|1)?[0-9]{4}','match'),'mmdd');
             end
             
             % Check for extreme differences in date % John stupidly didn't
             % include a year ; this corrects for 12/31/07 - 01/01/08
             
             [sortDates,newOrder] = sort(dateNumVec);
-            predays = predays(newOrder);
+            preDays = preDays(newOrder);
             
             difftest = diff(sortDates);
             
             dateDiffs = find(difftest > 30);
             
             if ~isempty(dateDiffs)
-                PredateOrder = [predays(dateDiffs+1:length(predays)) ;...
-                    predays(1:dateDiffs)];   
+                PredateOrder = [preDays(dateDiffs+1:length(preDays)) ;...
+                    preDays(1:dateDiffs)];   
             else
-                PredateOrder = predays;
+                PredateOrder = preDays;
             end
             
             if preAllcheck == 1;  
-                PredateOrder = [preAllday ; predays]; 
+                PredateOrder = [preAllday ; preDays]; 
             end
             
             preXaxis = num2cell(repmat('P',[length(PredateOrder),1]));
