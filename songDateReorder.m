@@ -101,7 +101,7 @@ for cI = 1:4
             
             LMANXaxis = num2cell(repmat('L',[length(LMdateOrder),1]));
             lmanCIndex = ones(1,length(LMdateOrder)) + 1;
-            lmanlrI = num2cell(nan(1,length(PredateOrder)));
+            lmanlrI = num2cell(nan(1,length(LMdateOrder)));
 
         case 3
             

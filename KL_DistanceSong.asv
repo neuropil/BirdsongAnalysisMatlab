@@ -1,4 +1,4 @@
-function [KL_allDays] = KL_DistanceSong(PreAll_check)
+function [] = KL_DistanceSong(PreAll_check)
 %UNTITLED Summary of this function goes here
 %   Detailed explanation goes here
 
@@ -119,35 +119,23 @@ KL_allDays.CondiIndex = condIndex;
 KL_allDays.NumItems = numItemsDS;
 KL_allDays.SongDayOrder = songListReO;
 KL_allDays.Features = featNames;
-KL_allDays.SongXaxis = songAxis;
 
 %%% plot the K-L distance %%%
-% figure(1)
-% for n = 1:numFeats - 1
-%     subplot(2,6,n);
-%     plot(KL(:,n), 'o-'); % this dies on 12th iteration
-%     xlim([0.8 numDays + 0.2]);
-%     title(sprintf('Duration and %s', featNames{n}), 'fontsize', 11);
-%     ylabel(sprintf('KL-distance \n from day 1 (bits)'), 'fontsize', 10);
-%     
-%     
-%     set(gca,'XTick', 1:1:length(songListReO))
-%     set(gca,'XTickLabel',songAxis);
-% 
-% end
+figure(1)
+for n = 1:numFeats - 1
+    subplot(2,6,n);
+    plot(KL(:,n), 'o-'); % this dies on 12th iteration
+    xlim([0.8 numDays + 0.2]);
+    title(sprintf('Duration and %s', featNames{n}), 'fontsize', 11);
+    ylabel(sprintf('KL-distance \n from day 1 (bits)'), 'fontsize', 10);
+    
+    
+    set(gca,'XTick', 1:1:length(songListReO))
+    set(gca,'XTickLabel',songAxis);
 
-
-SumDataLoc = strcat('C:\Users\Dr. JT\Documents\DataAnalysis\TF_Birdsong\SummaryData\',birdNum);
-
-if ~exist(SumDataLoc,'dir')
-    mkdir(SumDataLoc)
 end
 
-cd(SumDataLoc)
 
-saveName = strcat(birdNum,'_KL_SummaryData.mat');
-
-save(saveName,'KL_allDays');
 
 
 
