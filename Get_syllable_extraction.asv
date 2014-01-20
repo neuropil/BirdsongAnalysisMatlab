@@ -152,7 +152,7 @@ end
 
 
 
-%%%% FIGURE OUT WHAT TO DO WITH MISMATCH 1/19/2014
+%%%%
 if revSyllCheck
     
     sylDB = cell(1,maxNumSylls);
@@ -164,7 +164,7 @@ if revSyllCheck
     end
     
     for syCr = 1:length(sylls2combine)
-       sylDB{1,sylls2combine{syCr}(1)} = [sylDB{1,sylls2combine{syCr}(1)} ; sylDB{1,sylls2combine{syCr}(2)}];
+       
         
         
     end
@@ -216,7 +216,7 @@ pause(0.1);
 nodes = cell(1,maxNumSylls);
 xcords = cell(1,maxNumSylls);
 ycords = cell(1,maxNumSylls);
-colorS = 'rgkycmbw';
+colorS = 'rgkycm';
 IN = cell(1,maxNumSylls);
 for i = 1:maxNumSylls
     

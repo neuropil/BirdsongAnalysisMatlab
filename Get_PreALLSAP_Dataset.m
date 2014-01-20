@@ -12,7 +12,7 @@ DS_DATA_LOC = 'C:\Users\Dr. JT\Documents\DataAnalysis\TF_Birdsong\DataSet_Data';
 %-------------------------------------------------------------------------%
 % User input selected bird number
 %-------------------------------------------------------------------------%
-[Predates, condition, birdNum] = Get_Bird_PreALL;
+[Predates, ~, birdNum] = Get_Bird_PreALL;
 %-------------------------------------------------------------------------%
 % Generate cell list of xls file names
 %-------------------------------------------------------------------------%
@@ -23,7 +23,7 @@ end
 %-------------------------------------------------------------------------%
 % User input selected bird number
 %-------------------------------------------------------------------------%
-PRE_SAP_LOC = strcat(SAP_DATA_LOC,'\',birdNum,'\',condition,'\');
+PRE_SAP_LOC = strcat(SAP_DATA_LOC,'\',birdNum,'\Pre\');
 cd(PRE_SAP_LOC);
 songdatdir = cellstr(ls);
 sngNames = songdatdir(3:end);

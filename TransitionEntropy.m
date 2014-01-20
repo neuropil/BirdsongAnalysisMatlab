@@ -62,6 +62,19 @@ for dayI = 1:length(songListReO)
 end
 
 allEntropies = findEntropy(dayTransitionProbs);
-    
+   
+
+SumDataLoc = strcat('C:\Users\Dr. JT\Documents\DataAnalysis\TF_Birdsong\SummaryData\',birdNum);
+
+if ~exist(SumDataLoc,'dir')
+    mkdir(SumDataLoc)
+end
+
+cd(SumDataLoc)
+
+saveName = strcat(birdNum,'_TransEntropy.mat');
+
+save(saveName,'allEntropies');
+
 end
 

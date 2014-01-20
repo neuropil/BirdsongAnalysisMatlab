@@ -25,24 +25,24 @@ birdNum = birdnums{birdSel};
 % User input selected experimental condition
 %-------------------------------------------------------------------------%
 
-possibleConds = {'Infusion','Lesion','LMAN','Pre'};
-
-expCondFold = strcat(rawSongsDir,'\',birdNum,'\');
-cd(expCondFold);
-
-expCdir = cellstr(ls);
-exConds = expCdir(3:end);
-
-condSel = listdlg('ListString', possibleConds,...
-    'SelectionMode', 'single',...
-    'ListSize', [100 75],...
-    'PromptString', 'Select a condition');
-
-conselection = possibleConds{condSel};
-
-condOut = cellfun(@(x) strcmp(conselection,x), exConds);
-
-experCond = exConds{condOut};
+% possibleConds = {'Infusion','Lesion','LMAN','Pre'};
+% 
+% expCondFold = strcat(rawSongsDir,'\',birdNum,'\');
+% cd(expCondFold);
+% 
+% expCdir = cellstr(ls);
+% exConds = expCdir(3:end);
+% 
+% condSel = listdlg('ListString', possibleConds,...
+%     'SelectionMode', 'single',...
+%     'ListSize', [100 75],...
+%     'PromptString', 'Select a condition');
+% 
+% conselection = possibleConds{condSel};
+% 
+% condOut = cellfun(@(x) strcmp(conselection,x), exConds);
+% 
+% experCond = exConds{condOut};
 
 %-------------------------------------------------------------------------%
 % User input selected date
