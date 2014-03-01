@@ -124,10 +124,15 @@ function loadFold_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
+
+
+% Choose file in the folder location where wav files are stored
 [~,handles.rawWavs,~] = uigetfile('*.wav');
 
+% Extract value input to editable window
 testForFilt = get(handles.highpass,'String');
 
+% If User has not entered value present a window to select threshold
 if strcmp(testForFilt,'NA')
     prompt = {'Enter filter value:'};
     dlg_title = 'HighPass cutoff';
@@ -137,18 +142,24 @@ if strcmp(testForFilt,'NA')
     set(handles.highpass,'String',num2str(filtChange{:}));
 end
 
+% Extract numeric value from editable window
 getFilt = get(handles.highpass,'String');
 
+% Create new folder to hold modified wav files
 handles.newDir = strcat(handles.rawWavs,getFilt,'kHz\');
 
+% Change text on screen to indicate where files where be saved
 set(handles.wavLoc,'String',handles.newDir);
 
+% If new directory does not exist, then create it
 if ~exist(handles.newDir,'dir')
     mkdir(handles.newDir)
 end
 
+% Change directory to raw wav location
 cd(handles.rawWavs);
 
+% Get cell array of wav file names
 rawWavList = dir('*.wav');
 handles.rawWavList = {rawWavList.name};
 
@@ -170,9 +181,13 @@ function runFilt_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
+
+% Get pass value to use for filter
 testForFilt = get(handles.highpass,'String');
+% Get new directory to save processed wav files
 testForLoad = get(handles.wavLoc,'String');
 
+% Double check filter threshold
 if strcmp(testForFilt,'NA')
     prompt = {'Enter filter value:'};
     dlg_title = 'HighPass cutoff';
@@ -182,9 +197,12 @@ if strcmp(testForFilt,'NA')
     set(handles.highpass,'String',num2str(filtChange{:}));
 end
 
+% Convert filter value from string to numeric
 filterValue = str2double(get(handles.highpass,'String'));
 
+% Show stop button which will delete all current created files
 set(handles.stopButton,'Visible','on')
+
 
 if strcmp(testForLoad,'New Folder Location')
     warndlg('Load File Location!');
@@ -225,13 +243,13 @@ else
                 set(handles.overWav,'Xlim',[0 numel(rawW)]);
                 set(handles.overWav,'Visible','off')
                 
-                pause(0.5)
+                pause(0.15)
                 
                 hold on
                 
                 plot(rawHighFilt,'Color',[1 1 1])
                 
-                pause(0.5)
+                pause(0.3)
                 
                 cd(handles.newDir)
                 
@@ -325,7 +343,7 @@ else
                 set(handles.newWav,'Xlim',[0 numel(rawW)]);
                 set(handles.newWav,'Visible','off')
                 
-                pause(0.5)
+                pause(0.25)
                 
 %                 set(handles.wavName,'String',handles.rawWavList{wi});
                 
@@ -384,11 +402,39 @@ else
             
             
 
-    end
+    end    
+end
+
+% Create transfer and delete function
+qstring = 'Do you want to replace original wavs with filtered wavs?';
+qtitle = 'Transfer and Replace';
+delChoice = questdlg(qstring,qtitle,'Yes','No','Yes');
+
+if strcmp(delChoice,'Yes')
+    % cd to original wavs
+    cd(handles.rawWavs)
+    % Get raw wav names
+    rawWavList = dir('*.wav');
+    rawWavNames = {rawWavList.name};
+    raw2delete = char(rawWavNames);
+    % Delete original wavs
+    delete_All(handles.rawWavs,raw2delete);
     
+    %%% Transfer new files to old location
     
+    % cd to new wavs location
+    cd(handles.newDir)
+    % Get raw wav names
+    newWavList = dir('*.wav');
+    newWavNames = {newWavList.name};
+    % Move files
+    move_All(handles.rawWavs,newWavNames);
+    % Remove new directory
+    rmdir(handles.newDir)
     
 end
+
+
 
 
 guidata(hObject, handles);
@@ -497,8 +543,8 @@ foldNs = foldnames1(3:end);
 
 for fi = 1:length(foldNs)
     
-    loopDir = strcat(allFilesLoc,'\',foldNs{fi});
-    newDir = strcat(loopDir,'\',getFilt,'kHz\');
+    loopDir = strcat(allFilesLoc,'\',foldNs{fi},'\');
+    newDir = strcat(loopDir,getFilt,'kHz\');
     cd(loopDir)
     
     rawWavList = dir('*.wav');
@@ -546,6 +592,27 @@ for fi = 1:length(foldNs)
         
         audiowrite(rawWavListPro{rwi},rawHighFilt,rawW2)
     end
+    
+    cd(loopDir)
+    % Get raw wav names
+    rawWavList = dir('*.wav');
+    rawWavNames = {rawWavList.name};
+    % Delete original wavs
+    delete_All(loopDir,rawWavNames);
+    
+    %%% Transfer new files to old location
+    
+    % cd to new wavs location
+    cd(newDir)
+    % Get raw wav names
+    newWavList = dir('*.wav');
+    newWavNames = {newWavList.name};
+    % Move files
+    move_All(loopDir,newWavNames);
+    % Change back to outer directory
+    cd(loopDir)
+    % Remove new directory
+    rmdir(newDir)
     
 end
 

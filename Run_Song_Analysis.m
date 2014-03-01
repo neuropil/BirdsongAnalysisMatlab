@@ -7,6 +7,14 @@ addpath(genpath('C:\Users\Dr. JT\Documents\GitHub\BirdsongAnalysisMatlab'));
 
 cd('C:\Users\Dr. JT\Documents\DataAnalysis\TF_Birdsong');
 
+% Pre Processing each condition in single Bird folder
+
+%% Check to rename files
+SongFileRenamer;
+
+%% Threshold wav files with 1000 high pass filter
+SongWavFilter;
+
 %% 1st
 FistSongAnalysisFile;
 
@@ -22,7 +30,8 @@ KL_DistanceSong;
 %% 5th
 TransitionEntropy;
 
-
+%% 6th
+SongSequenceAnalysis;
 
 end
 

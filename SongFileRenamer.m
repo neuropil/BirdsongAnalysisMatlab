@@ -1,19 +1,31 @@
-% Rename files in days in a particular condition (i.e. Post LMAN)
+function [] = SongFileRenamer()
+
+folder2assess = uigetdir;
+
+cd(folder2assess)
 
 folderDir = dir;
 dayNames = {folderDir.name};
 dayNames = dayNames(3:end);
 
-currentFolder = pwd;
+% currentFolder = pwd;
+
+%% Figure out which folders need renaming
+
+getDayDir = @(x) dir(strcat(folder2assess,'\',x,'\*.wav'));
+getDayNames = @(x) {x.name};
+get1stDay = @(x) x{1}(1);
+
+dayIndex = cell2mat(cellfun(@(x) strcmp(get1stDay(getDayNames(getDayDir(x))),'T'), dayNames,...
+    'UniformOutput',false));
+
+days2assess = dayNames(dayIndex);
 
 %%
 
-days2run = cellfun(@(x) ~isempty(strfind(x,'rename')), dayNames);
-dayIndex = find(days2run);
-
-for i = 1:sum(days2run)
+for i = 1:sum(dayIndex)
     
-    dayofInt = dayNames{dayIndex(i)};
+    dayofInt = days2assess{i};
     
     cd(strcat(pwd,'\',dayofInt))
     
@@ -24,20 +36,18 @@ for i = 1:sum(days2run)
     numFiles = numel(fnames);
     
     for i2 = 1:numFiles
-        % Get the file name (minus the extension)
-%         [~, f] = fileparts(fnames{i2});
         
-        getLen = length(i2);
-        newname = num2str(i2);
+        getLen = length(num2str(i2));
+        pad = num2str(zeros(1, 5-getLen));
+        pad(pad==' ') = '';
+        newname = strcat(pad,num2str(i2),'.wav');
         
-        while getLen < 5
-            newname = [num2str(0) newname];
-            getLen = length(newname);
-        end
-        
-        tempName = strcat(newname,'.WAV');
-        
-        movefile(fnames{i2},tempName)
+        movefile(fnames{i2},newname)
     end  
 end
+
+
+
+
+
 
