@@ -10,13 +10,29 @@ dayNames = dayNames(3:end);
 
 % currentFolder = pwd;
 
+%% Delete txt files out of folders
+
+for dayI = 1:length(dayNames)
+    tempFold = strcat(folder2assess,'\',dayNames{dayI});
+    cd(tempFold)
+    
+    txtFilesD = dir('*.log');
+    txtFiles = {txtFilesD.name};
+    
+    for ti = 1:length(txtFiles)
+       delete(txtFiles{ti}); 
+    end
+end
+
+
 %% Figure out which folders need renaming
 
 getDayDir = @(x) dir(strcat(folder2assess,'\',x,'\*.wav'));
 getDayNames = @(x) {x.name};
-get1stDay = @(x) x{1}(1);
+get1stDay = @(x) x{1};
 
-dayIndex = cell2mat(cellfun(@(x) strcmp(get1stDay(getDayNames(getDayDir(x))),'T'), dayNames,...
+% Fix finding wrong filenames
+dayIndex = cell2mat(cellfun(@(x) length(get1stDay(getDayNames(getDayDir(x)))) ~= 9, dayNames,...
     'UniformOutput',false));
 
 days2assess = dayNames(dayIndex);
@@ -27,7 +43,7 @@ for i = 1:sum(dayIndex)
     
     dayofInt = days2assess{i};
     
-    cd(strcat(pwd,'\',dayofInt))
+    cd(strcat(folder2assess,'\',dayofInt))
     
     fdir = dir('*.WAV');
     
