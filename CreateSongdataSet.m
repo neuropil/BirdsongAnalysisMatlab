@@ -18,9 +18,9 @@ last = colNum(end-1);
 fnaCol = colNum(end);
 
 if isnan(sap_xlsfile{end,1})
-    lastrow = length(sap_xlsfile) - 1;
+    lastrow = size(sap_xlsfile,1) - 1;
 else
-    lastrow = lenght(asp_xlsfile);
+    lastrow = size(asp_xlsfile,1);
 end
 
 sapXlsTrans = sap_xlsfile(1:lastrow,begin:last);

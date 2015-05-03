@@ -12,7 +12,7 @@ DS_DATA_LOC = 'C:\Users\Dr. JT\Documents\DataAnalysis\TF_Birdsong\DataSet_Data';
 %-------------------------------------------------------------------------%
 % User input selected bird number
 %-------------------------------------------------------------------------%
-[Predates, ~, birdNum] = Get_Bird_PreALL;
+[Predates, birdNum] = Get_Bird_PreALL;
 %-------------------------------------------------------------------------%
 % Generate cell list of xls file names
 %-------------------------------------------------------------------------%
@@ -43,6 +43,30 @@ for sfds = 1:length(sFIndex)
     
     cd(PRE_SAP_LOC);
     [~, ~, raw.(strcat('day',num2str(sfds)))] = xlsread(songF2load,'Sheet1');
+    
+    % Check for NAN rows
+    
+    [nRows,nCols] = size(raw.(strcat('day',num2str(sfds))));
+    
+    row2rid = nan(1000,1);
+    rCount = 1;
+    for nci = 1:nRows
+        
+        tempRow = raw.(strcat('day',num2str(sfds)))(nci,:);
+        
+        numChars = ~cellfun(@(x) ischar(x), tempRow);
+        numNans = cellfun(@(x) isnan(x), tempRow(numChars));
+        
+        if sum(numNans) == nCols
+            row2rid(rCount) = nci;
+            rCount = rCount + 1;
+        end
+        
+    end
+    
+    row2rid = row2rid(~isnan(row2rid));
+    
+    raw.(strcat('day',num2str(sfds)))(row2rid,:) = [];
 
     songDataset.(strcat('day',num2str(sfds))) = CreatePreALLDS(raw.(strcat('day',num2str(sfds))));
     songAllPre = vertcat(songAllPre,songDataset.(strcat('day',num2str(sfds))));

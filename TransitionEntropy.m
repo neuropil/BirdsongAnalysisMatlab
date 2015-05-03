@@ -14,7 +14,7 @@ PreAllName = strcat(birdNum,'_PreALL.mat');
 nameIndex = ~strcmp(PreAllName,songsDSNs);
 songDSlist = songsDSNs(nameIndex);
 
-[songListReO , ~] = songDateReorder(songDSlist);
+[songListReO , ~] = songDateReorder_v2(songDSlist);
 
 % Calculate transition probability
 

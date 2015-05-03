@@ -416,7 +416,7 @@ if strcmp(delChoice,'Yes')
     % Get raw wav names
     rawWavList = dir('*.wav');
     rawWavNames = {rawWavList.name};
-    raw2delete = char(rawWavNames);
+    raw2delete = rawWavNames;
     % Delete original wavs
     delete_All(handles.rawWavs,raw2delete);
     

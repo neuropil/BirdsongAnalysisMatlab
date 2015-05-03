@@ -36,7 +36,8 @@ PreAllName = strcat(birdNum,'_PreALL.mat');
 nameIndex = ~strcmp(PreAllName,songsDSNs);
 songDSlist = songsDSNs(nameIndex);
 
-[songListReO , ~] = songDateReorder(songDSlist);
+% Replace songsDSNs with songListReO
+[songListReO , ~] = songDateReorder_v2(songDSlist);
 
 load(PreAllName);
 
@@ -62,7 +63,16 @@ end
 %% plot the clutered scatterplot %%%%
 
 xMax = mean(durationPreall) + (std(durationPreall)*2.25);
-yMax = mean(feat2usePreall) + (std(feat2usePreall)*2.25);
+yTest = mean(feat2usePreall) + (std(feat2usePreall)*2.25);
+if sign(mean(yTest)) == -1
+    yMin = quantile(feat2usePreall,0.01);
+    yMax = quantile(feat2usePreall,0.99);
+else
+    yMin = 0;
+    yMax = mean(feat2usePreall) + (std(feat2usePreall)*2.25);
+end
+
+
 
 figure(1);
 Rcolor = linspace(0.9,0,numClusts);
@@ -80,7 +90,8 @@ for clI = 1:numClusts
     ylabel(sprintf('%s', FeatureUsed), 'fontsize', 12);   
     title('Labeled Clusters', 'fontsize', 14);
     axis tight;
-    axis([0 xMax 0 yMax]);
+    set(gca, 'XLim', ([0 xMax]), 'YLim', ([-4 yMax]))
+
 end
 
 
@@ -150,29 +161,32 @@ end
 
 %% plot the selected sequencing distribution %%%
 
-dayIndex = [1 4 8 12];
-day = {'day 1', 'day 4', 'day 6', 'day 8'};
-numdisDays = length(dayIndex);
-% Get max syll trans probability across days of interest greater than 0.05
-maxProbIndex = find(max(syllTransProb(:,dayIndex),[],2) > 0.05); % add low probability sequences together
-
-maxSyllProbs = syllTransProb(maxProbIndex, :); 
-maxSyllProbs = [maxSyllProbs; 1 - sum(maxSyllProbs, 1)];  
-for ddI = 1:numdisDays
-    figure(2)
-    subplot(numdisDays,1,ddI);
-    bar(1:length(maxProbIndex)+1, maxSyllProbs(:,dayIndex(ddI)));  
-    ylim([0 max(syllTransProb(:)) + 0.1]);
-    xlim([0.5 length(maxProbIndex) + 1.5]); 
-    set(gca, 'xtick', 0:length(maxProbIndex), 'xticklabel', ' ');
-    if ddI == numdisDays
-        set(gca, 'xtick', 1:length(maxProbIndex)+1, 'xticklabel',...
-            [allPossSylTrans(maxProbIndex)' 'others'], 'fontsize', 12);
+if size(syllTransProb,2) > 12
+    
+    dayIndex = [1 4 8 12];
+    day = {'day 1', 'day 4', 'day 8', 'day 12'};
+    numdisDays = length(dayIndex);
+    % Get max syll trans probability across days of interest greater than 0.05
+    maxProbIndex = find(max(syllTransProb(:,dayIndex),[],2) > 0.05); % add low probability sequences together
+    
+    maxSyllProbs = syllTransProb(maxProbIndex, :);
+    maxSyllProbs = [maxSyllProbs; 1 - sum(maxSyllProbs, 1)];
+    for ddI = 1:numdisDays
+        figure(2)
+        subplot(numdisDays,1,ddI);
+        bar(1:length(maxProbIndex)+1, maxSyllProbs(:,dayIndex(ddI)));
+        ylim([0 max(syllTransProb(:)) + 0.1]);
+        xlim([0.5 length(maxProbIndex) + 1.5]);
+        set(gca, 'xtick', 0:length(maxProbIndex), 'xticklabel', ' ');
+        if ddI == numdisDays
+            set(gca, 'xtick', 1:length(maxProbIndex)+1, 'xticklabel',...
+                [allPossSylTrans(round(maxProbIndex/2))' 'others'], 'fontsize', 12);
+        end
+        set(gca, 'ytick', [0 0.4], 'fontsize', 12);
+        text(length(maxProbIndex)-1, 0.35, day{ddI}, 'fontsize', 14);
     end
-    set(gca, 'ytick', [0 0.4], 'fontsize', 12);  
-    text(length(maxProbIndex)-1, 0.35, day{ddI}, 'fontsize', 14);
+    
 end
-
 
 %% remove the zero effect
 syllProb = syllProb + 1e-6;  
@@ -181,7 +195,7 @@ syllTransProb = syllTransProb+ 1e-6;
 syllTransProb = syllTransProb./(ones(size(syllTransProb,1),1)*sum(syllTransProb)); 
 
 %% estimate the KL-distance of the notes recovery %%%
-allDays = length(songsDSNs);
+allDays = length(songListReO);
 
 for dayCount = 1:allDays
     E(1,dayCount) = sum(syllProb(:,1).*log2(syllProb(:,1)+eps) - syllProb(:,1).*log2(syllProb(:,dayCount)+eps));

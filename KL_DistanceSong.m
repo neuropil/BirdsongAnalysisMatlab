@@ -42,7 +42,9 @@ switch PreAll_check
 end
 
 % FINISH REORDER
-[songListReO , songAxis , condIndex, lrIndex] = songDateReorder(songList2use);
+% [songListReO , songAxis , condIndex, lrIndex] = songDateReorder(songList2use);
+
+[songListReO , songAxis , condIndex, lrIndex] = songDateReorder_v2(songList2use);
 
 numDays = length(songListReO); % 
 

@@ -1,4 +1,4 @@
-function [File_Predates, experCond, birdNum] = Get_Bird_PreALL()
+function [File_Predates, birdNum] = Get_Bird_PreALL()
 %Get_Bird_PreALL Summary of this function goes here
 %   Detailed explanation goes here
 

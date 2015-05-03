@@ -126,7 +126,7 @@ songSeqDirName = strcat('C:\Users\Dr. JT\Documents\DataAnalysis\TF_Birdsong\Song
 if exist(songSeqDirName,'dir')
     cd(songSeqDirName)
     if exist(seqFilename,'file')
-        disp('Seqence data has been analyzed!!!!');
+        disp('Sequence data has been analyzed!!!!');
         return
     end
 end
@@ -139,6 +139,10 @@ AllSongData = cell(length(songDSlist),2);
 for sdi = 1:length(songDSlist)
     tempSongDS = songDSlist{sdi};
     load(tempSongDS)
+
+    if sum(isnan(songDataset.MAM)) ~= 0
+        songDataset(isnan(songDataset.MAM),:) = [];
+    end
     
     syllable_indices = cell(1,TotalSylls);
     
